@@ -1,10 +1,20 @@
 import streamlit as st
-import time
 from vosk import Model, KaldiRecognizer, SetLogLevel
 from pydub import AudioSegment
 import subprocess
 import json
 import os
+
+# Настройка боковой панели
+st.sidebar.title("About")
+st.sidebar.info(
+    """
+    This service for recognition and processing audio to text.
+    """
+)
+st.sidebar.info("Feel free to collaborate and comment on the work. The github link can be found "
+                "[here](https://github.com/")
+
 
 st.header("Trascribe Audio, only mp3 format!")
 fileObject = st.file_uploader(label="Please upload your file")
@@ -17,13 +27,13 @@ if fileObject:
     f = open("soung.mp3", "wb")
     f.write(bytes_data)
 
-    # Обрезаем файл до 20 сек
+    # Обрезаем файл до 30 сек
     file_name = 'soung'
 
     startMin = 0
     startSec = 0
     endMin = 0
-    endSec = 20
+    endSec = 60
 
     # Time to miliseconds
     startTime = startMin * 60 * 1000 + startSec * 1000
@@ -62,12 +72,8 @@ if fileObject:
         result = rec.Result()
         text = json.loads(result)["text"]
 
-
-        sleep_duration = 0.01
-
-        #for percent in range(percent_complete, 101):
-        #    time.sleep(sleep_duration)
-        #    progress_bar.progress(percent)
+        cased = subprocess.check_output('python3 recasepunc/recasepunc.py predict recasepunc/checkpoint', shell=True,
+                                        text=True, input=text)
 
         audio_file = open('soung-extract.mp3', 'rb')
         audio_bytes = audio_file.read()
@@ -75,7 +81,7 @@ if fileObject:
         audio_file.close()
 
         st.subheader("Trascribe result: ")
-        st.markdown(text)
+        st.markdown(cased)
         f.close()
         os.remove("soung.mp3")
         os.remove("soung-extract.mp3")
