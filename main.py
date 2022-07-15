@@ -4,6 +4,7 @@ from pydub import AudioSegment
 import subprocess
 import json
 import os
+from streamlit_webrtc import webrtc_streamer
 
 # Настройка боковой панели
 st.sidebar.title("About")
@@ -16,6 +17,7 @@ st.sidebar.info("Feel free to collaborate and comment on the work. The github li
                 "[here](https://github.com/")
 
 
+webrtc_streamer(key="example")
 st.header("Trascribe Audio, only mp3 format!")
 fileObject = st.file_uploader(label="Please upload your file")
 
